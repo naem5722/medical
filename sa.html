@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة مخزون المعدات الطبية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .modal { transition: opacity 0.25s ease; }
+        .modal-content { transition: transform 0.25s ease; }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .tab-btn.active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        /* --- Print Styles --- */
+        @media print {
+            /* Hide everything in the body by default */
+            body > *:not(#sticker-print-area) {
+                display: none !important;
+            }
+
+            /* Make the print area visible and take up the whole page */
+            #sticker-print-area {
+                visibility: visible !important;
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                 -webkit-print-color-adjust: exact; /* Ensures colors and backgrounds print */
+                print-color-adjust: exact;
+            }
+            
+             /* Define the page size for the sticker */
+            @page {
+                size: 7cm 5cm;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app-view" class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="mb-8 flex flex-col items-center text-center">
+            <img src="logo.png" alt="شعار مجمع الصحابة الطبي" class="h-40 w-40 mb-4 object-contain">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">نظام إدارة مخزون المعدات الطبية</h1>
+                <p class="text-slate-600 mt-1">مجمع الصحابة الطبي</p>
+            </div>
+        </header>
+
+        <main>
+            <div class="mb-6 border-b border-gray-200">
+                <nav class="flex -mb-px" aria-label="Tabs">
+                    <button id="dashboard-tab" class="tab-btn active w-1/2 py-4 px-1 text-center border-b-2 font-medium text-lg text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        الرئيسية
+                    </button>
+                    <button id="list-tab" class="tab-btn w-1/2 py-4 px-1 text-center border-b-2 font-medium text-lg text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        قائمة الأجهزة
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="dashboard-view">
+                <section id="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-slate-500 font-medium">إجمالي الأجهزة</h3>
+                        <p id="total-devices" class="text-3xl font-bold mt-2 text-blue-600">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-slate-500 font-medium">أجهزة فعالة</h3>
+                        <p id="active-devices" class="text-3xl font-bold mt-2 text-green-600">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-slate-500 font-medium">تحتاج صيانة</h3>
+                        <p id="maintenance-devices" class="text-3xl font-bold mt-2 text-amber-500">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-slate-500 font-medium">خارج الخدمة</h3>
+                        <p id="oos-devices" class="text-3xl font-bold mt-2 text-red-600">0</p>
+                    </div>
+                </section>
+                
+                <section id="visuals" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold mb-4 text-center">توزيع الأجهزة على الأقسام</h3>
+                        <div class="chart-container">
+                            <canvas id="department-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold mb-4 text-center">حالة الأجهزة</h3>
+                         <div class="chart-container">
+                            <canvas id="status-chart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Device List View -->
+            <div id="list-view" class="hidden">
+                <section id="inventory-table" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+                        <h2 class="text-xl font-bold">قائمة الأجهزة</h2>
+                        <button id="add-device-btn" class="w-full md:w-auto bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                            + إضافة جهاز جديد
+                        </button>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-4 mb-4">
+                        <input type="text" id="search-input" placeholder="ابحث بالاسم أو الرقم التسلسلي..." class="flex-grow p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <select id="department-filter" class="p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">كل الأقسام</option>
+                        </select>
+                        <select id="status-filter" class="p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">كل الحالات</option>
+                            <option value="فعال">فعال</option>
+                            <option value="يحتاج صيانة">يحتاج صيانة</option>
+                            <option value="خارج الخدمة">خارج الخدمة</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-500">
+                            <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">كود الجهاز</th>
+                                    <th scope="col" class="px-6 py-3">اسم الجهاز</th>
+                                    <th scope="col" class="px-6 py-3">القسم</th>
+                                    <th scope="col" class="px-6 py-3">الحالة</th>
+                                    <th scope="col" class="px-6 py-3">الصيانة القادمة</th>
+                                    <th scope="col" class="px-6 py-3">إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devices-tbody">
+                            </tbody>
+                        </table>
+                         <p id="no-results" class="text-center py-8 text-slate-500 hidden">لا توجد نتائج تطابق بحثك.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit/Add Modal -->
+    <div id="edit-device-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden modal">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content">
+            <form id="device-form" class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="modal-title" class="text-2xl font-bold">إضافة جهاز جديد</h2>
+                    <button type="button" id="close-edit-modal-btn" class="text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
+                </div>
+                <input type="hidden" id="device-id-hidden">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="deviceName" class="block mb-2 text-sm font-medium text-slate-900">اسم الجهاز</label>
+                        <input type="text" id="deviceName" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="department" class="block mb-2 text-sm font-medium text-slate-900">القسم</label>
+                        <select id="department" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="serialNumber" class="block mb-2 text-sm font-medium text-slate-900">الرقم التسلسلي</label>
+                        <input type="text" id="serialNumber" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                    <div>
+                        <label for="model" class="block mb-2 text-sm font-medium text-slate-900">النموذج (الموديل)</label>
+                        <input type="text" id="model" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                    <div>
+                        <label for="purchaseDate" class="block mb-2 text-sm font-medium text-slate-900">تاريخ الشراء</label>
+                        <input type="date" id="purchaseDate" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                     <div>
+                        <label for="status" class="block mb-2 text-sm font-medium text-slate-900">حالة الجهاز</label>
+                        <select id="status" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                            <option value="فعال">فعال</option>
+                            <option value="يحتاج صيانة">يحتاج صيانة</option>
+                            <option value="خارج الخدمة">خارج الخدمة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="location" class="block mb-2 text-sm font-medium text-slate-900">الموقع</label>
+                        <input type="text" id="location" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                    <div>
+                        <label for="supplier" class="block mb-2 text-sm font-medium text-slate-900">المورد</label>
+                        <input type="text" id="supplier" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                     <div>
+                        <label for="lastMaintenanceDate" class="block mb-2 text-sm font-medium text-slate-900">تاريخ آخر صيانة</label>
+                        <input type="date" id="lastMaintenanceDate" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                     <div>
+                        <label for="nextMaintenanceDate" class="block mb-2 text-sm font-medium text-slate-900">تاريخ الصيانة القادمة</label>
+                        <input type="date" id="nextMaintenanceDate" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                    <div class="md:col-span-2">
+                         <label for="notes" class="block text-sm font-medium text-slate-900 mb-2">ملاحظات</label>
+                         <textarea id="notes" rows="4" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"></textarea>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-end gap-4">
+                    <button type="button" id="cancel-edit-btn" class="py-2 px-4 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors">إلغاء</button>
+                    <button type="submit" id="save-btn" class="py-2 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- View Modal -->
+    <div id="view-device-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden modal">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="view-modal-title" class="text-2xl font-bold"></h2>
+                    <button type="button" id="close-view-modal-btn" class="text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Right side: Info -->
+                    <div class="space-y-3 text-lg">
+                        <p><strong>الكود:</strong> <span id="view-id"></span></p>
+                        <p><strong>الرقم التسلسلي:</strong> <span id="view-serial"></span></p>
+                        <p><strong>القسم:</strong> <span id="view-department"></span></p>
+                        <p><strong>الحالة:</strong> <span id="view-status"></span></p>
+                        <p><strong>تاريخ الشراء:</strong> <span id="view-purchaseDate"></span></p>
+                        <p><strong>الشركة المصنعة:</strong> <span id="view-supplier"></span></p>
+                    </div>
+                    <!-- Left side: QR -->
+                    <div class="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center">
+                        <h3 class="font-bold text-slate-700 mb-2">رمز الاستجابة السريعة (QR Code)</h3>
+                        <div id="view-qrcode" class="p-2 bg-white border rounded-md"></div>
+                        <p class="text-sm text-slate-500 mt-2">امسح الكود لفتح طلب صيانة</p>
+                        <button type="button" id="print-qr-btn" class="mt-4 py-2 px-4 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fas fa-print mr-2"></i>طباعة الملصق
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-6 pt-4 border-t flex justify-end gap-4">
+                    <button type="button" id="view-delete-btn" class="py-2 px-6 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors">حذف</button>
+                    <button type="button" id="view-edit-btn" class="py-2 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors">تعديل</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden modal">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md modal-content">
+            <div class="p-6 text-center">
+                <i class="fas fa-exclamation-triangle text-5xl text-amber-500 mb-4"></i>
+                <h3 class="text-xl font-bold text-slate-900">تأكيد الحذف</h3>
+                <p class="text-slate-600 my-2">هل أنت متأكد أنك تريد حذف هذا الجهاز؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            </div>
+            <div class="flex justify-center gap-4 bg-slate-50 p-4 rounded-b-xl">
+                <button id="cancel-delete-btn" class="py-2 px-6 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors">إلغاء</button>
+                <button id="confirm-delete-btn" class="py-2 px-6 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors">نعم، احذف</button>
+            </div>
+        </div>
+    </div>
+    
+<!-- Sticker Print Area (Hidden by default, shown by print CSS) -->
+<div id="sticker-print-area" style="visibility: hidden; display: none;">
+    <div id="sticker-content" style="width: 7cm; height: 5cm; font-family: 'Cairo', sans-serif; display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px; box-sizing: border-box; background-color: white; border: 1px solid #ccc;">
+
+        <!-- Left Side: QR Code -->
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: right; height: 100%; color: black; width: 60%;">
+            <img src="logo.png" style="height: 2.2cm; width: auto; object-fit: contain; margin-bottom: 5px;">
+            <div style="text-align: right; width: 100%;">
+                <p style="font-size: 11pt; font-weight: 900; margin: 0 0 4px 0;">ID: <span id="sticker-device-id">PHY-001</span></p>
+                <p style="font-size: 9pt; margin: 2px 0;">القسم: <span id="sticker-department">العلاج الطبيعي</span></p>
+                <p style="font-size: 9pt; margin: 2px 0;">الموقع: <span id="sticker-location">غرفة 3</span></p>
+            </div>
+        </div>
+
+        <!-- Right Side: Info and Centered Logo -->
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: black; text-align: center;">
+            <div id="sticker-qrcode" style="padding: 2px; background: white;"></div>
+            <p style="font-size: 7pt; margin-top: 4px;">امسح لطلب صيانة</p>
+        </div>
+
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DATA & STORAGE ---
+    const departments = [
+        { code: 'EME', name: 'الطوارئ' },
+        { code: 'OPC', name: 'العيادات الخارجية' },
+        { code: 'RAD', name: 'الأشعة' },
+        { code: 'LAB', name: 'المختبر' },
+        { code: 'DEN', name: 'الأسنان' },
+        { code: 'OPE', name: 'العمليات' },
+        { code: 'INP', name: 'قسم المبيت' },
+        { code: 'OBG', name: 'النساء والتوليد' },
+        { code: 'NUR', name: 'الحضانة' },
+        { code: 'PHY', name: 'العلاج الطبيعي' },
+        { code: 'LAU', name: 'المغسلة' },
+        { code: 'STE', name: 'التعقيم' },
+        { code: 'WAR', name: 'المستودع' }
+    ];
+
+    let devices = []; // Start with an empty array
+
+    const saveDevicesToStorage = () => {
+        try {
+            localStorage.setItem('medicalDevicesData', JSON.stringify(devices));
+        } catch (e) {
+            console.error("Failed to save data to localStorage", e);
+        }
+    };
+
+    const loadDevicesFromStorage = () => {
+        try {
+            const storedData = localStorage.getItem('medicalDevicesData');
+            if (storedData) {
+                devices = JSON.parse(storedData);
+                return; // Data loaded from localStorage
+            }
+        } catch(e) {
+             console.error("Failed to load data from localStorage, falling back.", e);
+        }
+
+        // Fallback to initial default data
+        devices = [
+            { id: 'PHY-001', name: 'جهاز الموجات فوق الصوتية', department: 'العلاج الطبيعي', serial: 'SN12345', model: 'US-2000', purchaseDate: '2023-05-15', status: 'فعال', location: 'غرفة 3', supplier: 'شركة الأمل', lastMaintenance: '2025-01-10', nextMaintenance: '2025-07-10', notes: 'يعمل بكفاءة' },
+            { id: 'OPE-001', name: 'جهاز تخدير', department: 'العمليات', serial: 'SN67890', model: 'AN-500', purchaseDate: '2022-11-20', status: 'فعال', location: 'غرفة عمليات 1', supplier: 'ميديكال برو', lastMaintenance: '2024-12-01', nextMaintenance: '2025-06-01', notes: '' },
+            { id: 'OPC-001', name: 'جهاز تخطيط القلب', department: 'العيادات الخارجية', serial: 'SN54321', model: 'ECG-12', purchaseDate: '2024-02-01', status: 'يحتاج صيانة', location: 'عيادة القلب', supplier: 'شركة الأمل', lastMaintenance: '2025-02-01', nextMaintenance: '2025-04-01', notes: 'يظهر تشويش في القراءة' },
+        ];
+        saveDevicesToStorage(); // Save the initial data for the first time
+    };
+
+    // --- DOM ELEMENTS ---
+    const devicesTbody = document.getElementById('devices-tbody');
+    const searchInput = document.getElementById('search-input');
+    const departmentFilter = document.getElementById('department-filter');
+    const statusFilter = document.getElementById('status-filter');
+    const noResultsP = document.getElementById('no-results');
+    
+    // Modals
+    const editModal = document.getElementById('edit-device-modal');
+    const viewModal = document.getElementById('view-device-modal');
+    const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+    
+    // Edit Modal Elements
+    const modalTitle = document.getElementById('modal-title');
+    const deviceForm = document.getElementById('device-form');
+    const hiddenIdInput = document.getElementById('device-id-hidden');
+    const departmentSelectModal = document.getElementById('department');
+    
+    // View Modal Elements
+    const viewModalTitle = document.getElementById('view-modal-title');
+    const viewQrContainer = document.getElementById('view-qrcode');
+    
+    // Buttons
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const dashboardTab = document.getElementById('dashboard-tab');
+    const listTab = document.getElementById('list-tab');
+    
+    // Views
+    const dashboardView = document.getElementById('dashboard-view');
+    const listView = document.getElementById('list-view');
+
+    let departmentChartInstance, statusChartInstance;
+
+    // --- FUNCTIONS ---
+    const initializeApp = () => {
+        departmentFilter.innerHTML = '<option value="">كل الأقسام</option>';
+        departmentSelectModal.innerHTML = '';
+        departments.forEach(dep => {
+            departmentFilter.add(new Option(dep.name, dep.name));
+            departmentSelectModal.add(new Option(dep.name, dep.name));
+        });
+        
+        fullRender();
+        setupEventListeners();
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'فعال': return 'bg-green-100 text-green-800';
+            case 'يحتاج صيانة': return 'bg-amber-100 text-amber-800';
+            case 'خارج الخدمة': return 'bg-red-100 text-red-800';
+            default: return 'bg-slate-100 text-slate-800';
+        }
+    };
+    
+    const renderTable = () => {
+        devicesTbody.innerHTML = '';
+        const searchTerm = searchInput.value.toLowerCase();
+        const depFilter = departmentFilter.value;
+        const statFilter = statusFilter.value;
+        const filteredDevices = devices.filter(device => 
+            (device.name.toLowerCase().includes(searchTerm) || (device.serial && device.serial.toLowerCase().includes(searchTerm))) &&
+            (!depFilter || device.department === depFilter) &&
+            (!statFilter || device.status === statFilter)
+        );
+        noResultsP.classList.toggle('hidden', filteredDevices.length > 0);
+        filteredDevices.forEach(device => {
+            const tr = document.createElement('tr');
+            tr.className = 'bg-white border-b hover:bg-slate-50';
+            tr.innerHTML = `
+                <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">${device.id}</td>
+                <td class="px-6 py-4">${device.name}</td>
+                <td class="px-6 py-4">${device.department}</td>
+                <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(device.status)}">${device.status}</span></td>
+                <td class="px-6 py-4">${device.nextMaintenance || 'N/A'}</td>
+                <td class="px-6 py-4 text-left">
+                    <button data-id="${device.id}" class="details-btn font-medium text-blue-600 hover:underline">تفاصيل</button>
+                </td>
+            `;
+            devicesTbody.appendChild(tr);
+        });
+    };
+
+    const updateStats = () => {
+        document.getElementById('total-devices').textContent = devices.length;
+        document.getElementById('active-devices').textContent = devices.filter(d => d.status === 'فعال').length;
+        document.getElementById('maintenance-devices').textContent = devices.filter(d => d.status === 'يحتاج صيانة').length;
+        document.getElementById('oos-devices').textContent = devices.filter(d => d.status === 'خارج الخدمة').length;
+    };
+    
+    const renderCharts = () => {
+        const depCtx = document.getElementById('department-chart').getContext('2d');
+        const statusCtx = document.getElementById('status-chart').getContext('2d');
+        const depCounts = departments.map(dep => ({ name: dep.name, count: devices.filter(d => d.department === dep.name).length }));
+        const statusCounts = { 'فعال': 0, 'يحتاج صيانة': 0, 'خارج الخدمة': 0 };
+        devices.forEach(d => { if(statusCounts.hasOwnProperty(d.status)) statusCounts[d.status]++; });
+        if(departmentChartInstance) departmentChartInstance.destroy();
+        departmentChartInstance = new Chart(depCtx, { type: 'bar', data: { labels: depCounts.map(d => d.name), datasets: [{ label: 'عدد الأجهزة', data: depCounts.map(d => d.count), backgroundColor: 'rgba(59, 130, 246, 0.7)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } } });
+        if(statusChartInstance) statusChartInstance.destroy();
+        statusChartInstance = new Chart(statusCtx, { type: 'doughnut', data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['rgba(34, 197, 94, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(239, 68, 68, 0.7)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+    };
+
+    const openEditModal = (device = null) => {
+        deviceForm.reset();
+        if (device) {
+            modalTitle.textContent = 'تعديل بيانات الجهاز';
+            // Use a map to handle different element IDs
+            const formElements = {
+                deviceName: device.name,
+                department: device.department,
+                serialNumber: device.serial,
+                model: device.model,
+                purchaseDate: device.purchaseDate,
+                status: device.status,
+                location: device.location,
+                supplier: device.supplier,
+                lastMaintenanceDate: device.lastMaintenance,
+                nextMaintenanceDate: device.nextMaintenance,
+                notes: device.notes
+            };
+            hiddenIdInput.value = device.id;
+            Object.keys(formElements).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) el.value = formElements[key] || '';
+            });
+        } else {
+            modalTitle.textContent = 'إضافة جهاز جديد';
+            hiddenIdInput.value = '';
+        }
+        editModal.classList.remove('hidden');
+        setTimeout(() => editModal.querySelector('.modal-content').classList.remove('scale-95'), 10);
+    };
+    
+    const closeEditModal = () => {
+        editModal.querySelector('.modal-content').classList.add('scale-95');
+        setTimeout(() => editModal.classList.add('hidden'), 250);
+    };
+
+    const openViewModal = (device) => {
+        viewModalTitle.textContent = device.name;
+        document.getElementById('view-id').textContent = device.id;
+        document.getElementById('view-serial').textContent = device.serial || 'N/A';
+        document.getElementById('view-department').textContent = device.department;
+        document.getElementById('view-status').textContent = device.status;
+        document.getElementById('view-purchaseDate').textContent = device.purchaseDate || 'N/A';
+        document.getElementById('view-supplier').textContent = device.supplier || 'N/A';
+        
+        viewQrContainer.innerHTML = '';
+        const whatsAppNumber = "972567090858";
+        const message = `عطل بالجهاز: ${device.id}\nالمشكلة: `;
+        const whatsappUrl = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
+        new QRCode(viewQrContainer, {
+            text: whatsappUrl, 
+            width: 150, 
+            height: 150,
+            correctLevel : QRCode.CorrectLevel.L
+        });
+
+        document.getElementById('view-edit-btn').onclick = () => {
+            closeViewModal();
+            openEditModal(device);
+        };
+        document.getElementById('view-delete-btn').onclick = () => {
+            closeViewModal();
+            openDeleteModal(device.id);
+        };
+        document.getElementById('print-qr-btn').onclick = () => printSticker(device);
+
+        viewModal.classList.remove('hidden');
+        setTimeout(() => viewModal.querySelector('.modal-content').classList.remove('scale-95'), 10);
+    };
+
+    const closeViewModal = () => {
+        viewModal.querySelector('.modal-content').classList.add('scale-95');
+        setTimeout(() => viewModal.classList.add('hidden'), 250);
+    };
+
+    const openDeleteModal = (deviceId) => {
+        confirmDeleteBtn.dataset.deviceIdToDelete = deviceId;
+        deleteConfirmModal.classList.remove('hidden');
+        setTimeout(() => deleteConfirmModal.querySelector('.modal-content').classList.remove('scale-95'), 10);
+    };
+
+    const closeDeleteModal = () => {
+        deleteConfirmModal.querySelector('.modal-content').classList.add('scale-95');
+        setTimeout(() => deleteConfirmModal.classList.add('hidden'), 250);
+    };
+
+    const generateDeviceId = (departmentName) => {
+        const department = departments.find(d => d.name === departmentName);
+        if (!department) return null;
+        const depCode = department.code;
+        
+        const devicesInDep = devices.filter(d => d.id.startsWith(depCode));
+        let maxNum = 0;
+        devicesInDep.forEach(d => {
+            const numPart = parseInt(d.id.split('-')[1], 10);
+            if (numPart > maxNum) {
+                maxNum = numPart;
+            }
+        });
+        const nextNum = maxNum + 1;
+        return `${depCode}-${String(nextNum).padStart(3, '0')}`;
+    };
+    
+    /**
+     * Prepares the sticker content and triggers the browser's print dialog.
+     * This function is non-destructive and does not affect the page's event listeners.
+     */
+    const printSticker = (device) => {
+        // 1. Populate the sticker's HTML elements with device data
+        document.getElementById('sticker-device-id').textContent = device.id;
+        document.getElementById('sticker-department').textContent = device.department;
+        document.getElementById('sticker-location').textContent = device.location || 'غير محدد';
+
+        // 2. Generate the QR code for the sticker
+        const stickerQrContainer = document.getElementById('sticker-qrcode');
+        stickerQrContainer.innerHTML = ''; // Clear previous QR code
+        const whatsAppNumber = "972567090858";
+        const message = `عطل بالجهاز: ${device.id}\nالمشكلة: `;
+        const whatsappUrl = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
+        new QRCode(stickerQrContainer, {
+            text: whatsappUrl,
+            width: 90,
+            height: 90,
+            correctLevel: QRCode.CorrectLevel.L
+        });
+        
+        // 3. Trigger the print dialog
+        // The @media print CSS rules will automatically handle showing only the sticker.
+        window.print();
+    };
+
+    const fullRender = () => { renderTable(); updateStats(); renderCharts(); };
+
+    const setupEventListeners = () => {
+        deviceForm.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('deviceName').value,
+                department: document.getElementById('department').value,
+                serial: document.getElementById('serialNumber').value,
+                model: document.getElementById('model').value,
+                purchaseDate: document.getElementById('purchaseDate').value,
+                status: document.getElementById('status').value,
+                location: document.getElementById('location').value,
+                supplier: document.getElementById('supplier').value,
+                lastMaintenance: document.getElementById('lastMaintenanceDate').value,
+                nextMaintenance: document.getElementById('nextMaintenanceDate').value,
+                notes: document.getElementById('notes').value
+            };
+            if (hiddenIdInput.value) {
+                const index = devices.findIndex(d => d.id === hiddenIdInput.value);
+                if (index !== -1) devices[index] = { ...devices[index], ...formData, id: hiddenIdInput.value };
+            } else {
+                formData.id = generateDeviceId(formData.department);
+                devices.push(formData);
+            }
+            saveDevicesToStorage();
+            fullRender();
+            closeEditModal();
+        };
+        document.getElementById('add-device-btn').onclick = () => openEditModal();
+        document.getElementById('close-edit-modal-btn').onclick = closeEditModal;
+        document.getElementById('cancel-edit-btn').onclick = closeEditModal;
+        document.getElementById('close-view-modal-btn').onclick = closeViewModal;
+        
+        devicesTbody.onclick = (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            const deviceId = target.dataset.id;
+            if (target.classList.contains('details-btn')) {
+                const device = devices.find(d => d.id === deviceId);
+                if (device) openViewModal(device);
+            }
+        };
+
+        cancelDeleteBtn.onclick = closeDeleteModal;
+        confirmDeleteBtn.onclick = () => {
+            const deviceIdToDelete = confirmDeleteBtn.dataset.deviceIdToDelete;
+            devices = devices.filter(d => d.id !== deviceIdToDelete);
+            saveDevicesToStorage();
+            fullRender();
+            closeDeleteModal();
+        };
+
+        dashboardTab.onclick = () => {
+            dashboardTab.classList.add('active');
+            listTab.classList.remove('active');
+            dashboardView.classList.remove('hidden');
+            listView.classList.add('hidden');
+        };
+
+        listTab.onclick = () => {
+            listTab.classList.add('active');
+            dashboardTab.classList.remove('active');
+            listView.classList.remove('hidden');
+            dashboardView.classList.add('hidden');
+        };
+
+        searchInput.oninput = renderTable;
+        departmentFilter.onchange = renderTable;
+        statusFilter.onchange = renderTable;
+    };
+
+    // --- INITIALIZATION ---
+    loadDevicesFromStorage();
+    initializeApp();
+});
+</script>
+</body>
+</html>
