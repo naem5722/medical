@@ -36,35 +36,38 @@
 <body class="text-slate-800">
 
     <!-- Login View -->
-    <div id="login-view" class="min-h-screen flex items-center justify-center bg-cover bg-center p-4" style="background-image: url('https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
-        <div class="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <!-- Engineers Info -->
-            <div class="space-y-4">
-                <div class="engineer-card bg-white/80 login-card p-5 rounded-2xl shadow-lg flex items-center gap-4">
-                    <i class="fa-solid fa-user-gear fa-3x text-blue-600 bg-blue-100 p-3 rounded-full"></i>
-                    <div>
-                        <h3 class="font-bold text-lg text-slate-900">المهندس كامل اليازجي</h3>
-                        <p class="text-slate-600 font-medium" dir="ltr">+970 59 795 5844</p>
+    <div id="login-view" class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center p-4" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+        <div class="w-full max-w-6xl mx-auto flex flex-col items-center gap-8">
+            <!-- Engineers Info (Top) -->
+            <div class="w-full">
+                <h2 class="text-center text-2xl font-bold text-white mb-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">فريق الهندسة الطبية</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="engineer-card bg-white/80 login-card p-4 rounded-2xl shadow-lg flex items-center gap-4">
+                        <i class="fa-solid fa-user-gear fa-2x text-blue-600 bg-blue-100 p-3 rounded-full"></i>
+                        <div>
+                            <h3 class="font-bold text-md text-slate-900">المهندس كامل اليازجي</h3>
+                            <p class="text-slate-600 font-medium text-sm" dir="ltr">+970 59 795 5844</p>
+                        </div>
                     </div>
-                </div>
-                 <div class="engineer-card bg-white/80 login-card p-5 rounded-2xl shadow-lg flex items-center gap-4">
-                    <i class="fa-solid fa-user-gear fa-3x text-green-600 bg-green-100 p-3 rounded-full"></i>
-                    <div>
-                        <h3 class="font-bold text-lg text-slate-900">المهندس خالد صبيح</h3>
-                        <p class="text-slate-600 font-medium" dir="ltr">+972 59 286 1562</p>
+                     <div class="engineer-card bg-white/80 login-card p-4 rounded-2xl shadow-lg flex items-center gap-4">
+                        <i class="fa-solid fa-user-gear fa-2x text-green-600 bg-green-100 p-3 rounded-full"></i>
+                        <div>
+                            <h3 class="font-bold text-md text-slate-900">المهندس خالد صبيح</h3>
+                            <p class="text-slate-600 font-medium text-sm" dir="ltr">+972 59 286 1562</p>
+                        </div>
                     </div>
-                </div>
-                 <div class="engineer-card bg-white/80 login-card p-5 rounded-2xl shadow-lg flex items-center gap-4">
-                    <i class="fa-solid fa-user-gear fa-3x text-orange-600 bg-orange-100 p-3 rounded-full"></i>
-                    <div>
-                        <h3 class="font-bold text-lg text-slate-900">المهندس نعيم الحتو</h3>
-                        <p class="text-slate-600 font-medium" dir="ltr">+972 56 709 0858</p>
+                     <div class="engineer-card bg-white/80 login-card p-4 rounded-2xl shadow-lg flex items-center gap-4">
+                        <i class="fa-solid fa-user-gear fa-2x text-orange-600 bg-orange-100 p-3 rounded-full"></i>
+                        <div>
+                            <h3 class="font-bold text-md text-slate-900">المهندس نعيم الحتو</h3>
+                            <p class="text-slate-600 font-medium text-sm" dir="ltr">+972 56 709 0858</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Login Form -->
-            <div class="bg-white/80 login-card p-8 rounded-2xl shadow-2xl text-center">
+            <!-- Login Form (Bottom) -->
+            <div class="w-full max-w-md bg-white/80 login-card p-8 rounded-2xl shadow-2xl text-center">
                 <img src="logo.png" alt="شعار" class="h-28 w-28 mx-auto mb-4">
                 <h2 class="text-2xl font-bold text-slate-900 mb-2">نظام إدارة المخزون</h2>
                 <p class="text-slate-600 mb-6">الرجاء تسجيل الدخول للمتابعة</p>
@@ -94,7 +97,7 @@
 
     <!-- Main App View -->
     <div id="app-view" class="hidden">
-        <header class="bg-white shadow-md">
+        <header class="bg-white shadow-md sticky top-0 z-40">
             <div class="container mx-auto p-4 flex justify-between items-center">
                  <div class="flex items-center gap-3">
                     <img src="logo.png" alt="شعار" class="h-12 w-12">
@@ -125,9 +128,9 @@
                 <!-- Maintenance Today Section -->
                 <section id="maintenance-today-section" class="mb-8">
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <h3 class="text-xl font-bold mb-4 text-slate-800 flex items-center"><i class="fas fa-tools text-blue-500 ml-3"></i>أجهزة تحتاج صيانة اليوم</h3>
+                        <h3 class="text-xl font-bold mb-4 text-slate-800 flex items-center"><i class="fas fa-tools text-amber-500 ml-3"></i>أجهزة تحتاج إلى صيانة</h3>
                         <div id="maintenance-today-list" class="space-y-3"></div>
-                        <p id="no-maintenance-today" class="text-center py-4 text-slate-500 hidden">لا توجد أجهزة تحتاج إلى صيانة دورية اليوم.</p>
+                        <p id="no-maintenance-today" class="text-center py-4 text-slate-500 hidden">لا توجد أجهزة تحتاج إلى صيانة حالياً.</p>
                     </div>
                 </section>
                 <!-- Stats & Charts -->
@@ -195,18 +198,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const storedData = localStorage.getItem('medicalDevicesData');
             if (storedData) {
                 AppState.devices = JSON.parse(storedData);
-                // Ensure maintenanceHistory is an array
                 AppState.devices.forEach(d => {
-                    if (!Array.isArray(d.maintenanceHistory)) {
-                        d.maintenanceHistory = [];
-                    }
+                    if (!Array.isArray(d.maintenanceHistory)) d.maintenanceHistory = [];
                 });
                 return;
             }
         } catch(e) { console.error("Failed to load data", e); }
-        // Fallback data
+        
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        const yesterdayString = yesterday.toISOString().split('T')[0];
+
         AppState.devices = [
             { id: 'PHY-001', name: 'جهاز الموجات فوق الصوتية', department: 'العلاج الطبيعي', serial: 'SN12345', model: 'US-2000', purchaseDate: '2023-05-15', status: 'فعال', location: 'غرفة 3', supplier: 'شركة الأمل', lastMaintenance: '2025-01-10', maintenanceInterval: '6', nextMaintenance: '2025-07-10', notes: 'يعمل بكفاءة', maintenanceHistory: [{date: '2025-01-10', engineer: 'النظام'}] },
+            { id: 'RAD-001', name: 'جهاز أشعة X-Ray', department: 'الأشعة', serial: 'SN-XR-999', model: 'X-Ray 5000', purchaseDate: '2024-02-01', status: 'فعال', location: 'غرفة الأشعة 2', supplier: 'ميديكال برو', lastMaintenance: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString().split('T')[0], maintenanceInterval: '3', nextMaintenance: todayString, notes: 'جهاز جديد يحتاج أول صيانة دورية', maintenanceHistory: [] },
+            { id: 'LAB-001', name: 'جهاز تحليل الدم', department: 'المختبر', serial: 'SN-BL-777', model: 'BloodAnalyzer', purchaseDate: '2023-11-11', status: 'فعال', location: 'المختبر الرئيسي', supplier: 'شركة الأمل', lastMaintenance: new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString().split('T')[0], maintenanceInterval: '6', nextMaintenance: yesterdayString, notes: 'فات موعد صيانته', maintenanceHistory: [] },
         ];
         saveToStorage();
     };
@@ -219,6 +227,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
+    };
+
+    const isDeviceDueForMaintenance = (device) => {
+        if (!device.nextMaintenance || device.status === 'خارج الخدمة') return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const nextMaintenanceDate = new Date(device.nextMaintenance);
+        nextMaintenanceDate.setHours(0, 0, 0, 0);
+        return nextMaintenanceDate <= today;
     };
 
     const generateDeviceId = (departmentName) => {
@@ -272,61 +289,63 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderDashboard = () => {
-        // Stats
         const statsContainer = document.getElementById('stats');
+        const needsMaintenanceCount = AppState.devices.filter(d => d.status === 'يحتاج صيانة' || (isDeviceDueForMaintenance(d) && d.status !== 'خارج الخدمة')).length;
         statsContainer.innerHTML = `
             <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-slate-500 font-medium">إجمالي الأجهزة</h3><p class="text-3xl font-bold mt-2 text-blue-600">${AppState.devices.length}</p></div>
-            <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-slate-500 font-medium">أجهزة فعالة</h3><p class="text-3xl font-bold mt-2 text-green-600">${AppState.devices.filter(d => d.status === 'فعال').length}</p></div>
-            <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-slate-500 font-medium">تحتاج صيانة</h3><p class="text-3xl font-bold mt-2 text-amber-500">${AppState.devices.filter(d => d.status === 'يحتاج صيانة').length}</p></div>
+            <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-slate-500 font-medium">أجهزة فعالة</h3><p class="text-3xl font-bold mt-2 text-green-600">${AppState.devices.filter(d => d.status === 'فعال' && !isDeviceDueForMaintenance(d)).length}</p></div>
+            <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-slate-500 font-medium">تحتاج صيانة</h3><p class="text-3xl font-bold mt-2 text-amber-500">${needsMaintenanceCount}</p></div>
             <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-slate-500 font-medium">خارج الخدمة</h3><p class="text-3xl font-bold mt-2 text-red-600">${AppState.devices.filter(d => d.status === 'خارج الخدمة').length}</p></div>
         `;
-
-        // Charts
         const visualsContainer = document.getElementById('visuals');
         visualsContainer.innerHTML = `
             <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-lg font-bold mb-4 text-center">توزيع الأجهزة على الأقسام</h3><div class="h-80"><canvas id="department-chart"></canvas></div></div>
             <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="text-lg font-bold mb-4 text-center">حالة الأجهزة</h3><div class="h-80"><canvas id="status-chart"></canvas></div></div>
         `;
         renderCharts();
-        renderMaintenanceToday();
+        renderMaintenanceList();
     };
 
     const renderCharts = () => {
-        // Department Chart
         const depCtx = document.getElementById('department-chart').getContext('2d');
         const depCounts = AppState.departments.map(dep => ({ name: dep.name, count: AppState.devices.filter(d => d.department === dep.name).length }));
         new Chart(depCtx, { type: 'bar', data: { labels: depCounts.map(d => d.name), datasets: [{ label: 'عدد الأجهزة', data: depCounts.map(d => d.count), backgroundColor: 'rgba(59, 130, 246, 0.7)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } } });
-
-        // Status Chart
         const statusCtx = document.getElementById('status-chart').getContext('2d');
-        const statusCounts = { 'فعال': 0, 'يحتاج صيانة': 0, 'خارج الخدمة': 0 };
-        AppState.devices.forEach(d => { if(statusCounts.hasOwnProperty(d.status)) statusCounts[d.status]++; });
+        const statusCounts = { 'فعال': 0, 'تحت الصيانة': 0, 'خارج الخدمة': 0 };
+        AppState.devices.forEach(d => {
+            if (d.status === 'خارج الخدمة') statusCounts['خارج الخدمة']++;
+            else if (d.status === 'يحتاج صيانة' || isDeviceDueForMaintenance(d)) statusCounts['تحت الصيانة']++;
+            else statusCounts['فعال']++;
+        });
         new Chart(statusCtx, { type: 'doughnut', data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['rgba(34, 197, 94, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(239, 68, 68, 0.7)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
     };
     
-    const renderMaintenanceToday = () => {
+    const renderMaintenanceList = () => {
         const listEl = document.getElementById('maintenance-today-list');
         const noItemsEl = document.getElementById('no-maintenance-today');
         listEl.innerHTML = '';
-        const today = new Date().toISOString().split('T')[0];
-
-        const devicesForMaintenance = AppState.devices.filter(d => d.nextMaintenance === today);
+        
+        const devicesForMaintenance = AppState.devices.filter(d => (isDeviceDueForMaintenance(d) || d.status === 'يحتاج صيانة') && d.status !== 'خارج الخدمة');
         noItemsEl.style.display = devicesForMaintenance.length > 0 ? 'none' : 'block';
 
         devicesForMaintenance.forEach(device => {
-            const lastMaint = device.maintenanceHistory.slice(-1)[0];
-            const lastEngineer = lastMaint ? lastMaint.engineer : 'غير مسجل';
+            const isDue = isDeviceDueForMaintenance(device);
+            const reason = isDue ? `صيانة دورية مستحقة منذ: ${formatDate(device.nextMaintenance)}` : `الحالة: يحتاج صيانة`;
             const item = document.createElement('div');
-            item.className = 'p-3 bg-blue-50 rounded-lg flex justify-between items-center';
+            item.className = 'p-3 bg-amber-50 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2';
             item.innerHTML = `
                 <div>
                     <p class="font-bold text-slate-800">${device.name} <span class="text-sm font-normal text-slate-500">(${device.id})</span></p>
-                    <p class="text-sm text-slate-600">القسم: ${device.department} | آخر صيانة بواسطة: ${lastEngineer}</p>
+                    <p class="text-sm text-slate-600">القسم: ${device.department} | السبب: ${reason}</p>
                 </div>
-                <button data-id="${device.id}" class="details-btn font-medium text-blue-600 hover:underline">عرض التفاصيل</button>
+                <div class="flex items-center gap-2">
+                     <button data-id="${device.id}" class="details-btn text-sm font-medium text-slate-600 hover:text-blue-600">عرض التفاصيل</button>
+                     <button data-id="${device.id}" class="complete-maint-btn engineer-only bg-green-500 text-white text-sm font-bold py-1 px-3 rounded-md hover:bg-green-600">تسجيل الصيانة</button>
+                </div>
             `;
             listEl.appendChild(item);
         });
+        renderUIForRole();
     };
 
     const renderDeviceList = () => {
@@ -357,11 +376,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </section>
         `;
-        // Populate filters and table
         const departmentFilterEl = document.getElementById('department-filter');
         departmentFilterEl.innerHTML = '<option value="">كل الأقسام</option>';
         AppState.departments.forEach(dep => departmentFilterEl.add(new Option(dep.name, dep.name)));
-        
         filterAndRenderTable();
         renderUIForRole();
     };
@@ -373,23 +390,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchTerm = document.getElementById('search-input')?.value.toLowerCase() || '';
         const depFilter = document.getElementById('department-filter')?.value || '';
         const statFilter = document.getElementById('status-filter')?.value || '';
-
         const filtered = AppState.devices.filter(d => 
             (d.name.toLowerCase().includes(searchTerm) || d.serial?.toLowerCase().includes(searchTerm)) &&
             (!depFilter || d.department === depFilter) &&
             (!statFilter || d.status === statFilter)
         );
-
         document.getElementById('no-results').style.display = filtered.length > 0 ? 'none' : 'block';
-        
         filtered.forEach(device => {
             const tr = document.createElement('tr');
             tr.className = 'bg-white border-b hover:bg-slate-50';
+            const isDue = isDeviceDueForMaintenance(device);
+            const statusColor = device.status === 'خارج الخدمة' ? 'bg-red-100 text-red-800' : (device.status === 'يحتاج صيانة' || isDue) ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800';
+            const statusText = device.status === 'خارج الخدمة' ? 'خارج الخدمة' : (device.status === 'يحتاج صيانة' || isDue) ? 'تحت الصيانة' : 'فعال';
+
             tr.innerHTML = `
                 <td class="px-6 py-4 font-medium text-slate-900">${device.id}</td>
                 <td class="px-6 py-4">${device.name}</td>
                 <td class="px-6 py-4">${device.department}</td>
-                <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${device.status === 'فعال' ? 'bg-green-100 text-green-800' : device.status === 'يحتاج صيانة' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}">${device.status}</span></td>
+                <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">${statusText}</span></td>
                 <td class="px-6 py-4">${formatDate(device.nextMaintenance)}</td>
                 <td class="px-6 py-4"><button data-id="${device.id}" class="details-btn font-medium text-blue-600 hover:underline">تفاصيل</button></td>
             `;
@@ -401,13 +419,8 @@ document.addEventListener('DOMContentLoaded', () => {
         modalsContainer.innerHTML = modalHTML;
         const modal = modalsContainer.firstElementChild;
         modal.classList.remove('hidden');
-        // Attach close events
-        modal.querySelectorAll('.close-modal-btn').forEach(btn => {
-            btn.onclick = () => modalsContainer.innerHTML = '';
-        });
-        modal.onclick = (e) => {
-            if (e.target === modal) modalsContainer.innerHTML = '';
-        };
+        modal.querySelectorAll('.close-modal-btn').forEach(btn => btn.onclick = () => modalsContainer.innerHTML = '');
+        modal.onclick = (e) => { if (e.target === modal) modalsContainer.innerHTML = ''; };
     };
 
     const openEditModal = (device = null) => {
@@ -445,8 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         openModal(modalHTML);
-
-        // Add event listeners for automatic date calculation
         const lastMaintField = document.getElementById('lastMaintenanceDate');
         const intervalField = document.getElementById('maintenanceInterval');
         const nextMaintField = document.getElementById('nextMaintenanceDate');
@@ -462,63 +473,65 @@ document.addEventListener('DOMContentLoaded', () => {
         lastMaintField.onchange = calculateNext;
         intervalField.onchange = calculateNext;
 
-        // Form submission
         document.getElementById('device-form').onsubmit = (e) => {
             e.preventDefault();
             const id = document.getElementById('device-id-hidden').value;
-            const lastMaintenanceDate = document.getElementById('lastMaintenanceDate').value;
-            
+            const newStatus = document.getElementById('status').value;
             const formData = {
                 name: document.getElementById('deviceName').value, department: document.getElementById('department').value,
                 serial: document.getElementById('serialNumber').value, model: document.getElementById('model').value,
-                purchaseDate: document.getElementById('purchaseDate').value, status: document.getElementById('status').value,
+                purchaseDate: document.getElementById('purchaseDate').value, status: newStatus,
                 location: document.getElementById('location').value, supplier: document.getElementById('supplier').value,
-                lastMaintenance: lastMaintenanceDate,
+                lastMaintenance: document.getElementById('lastMaintenanceDate').value,
                 maintenanceInterval: document.getElementById('maintenanceInterval').value,
                 nextMaintenance: document.getElementById('nextMaintenanceDate').value,
-                notes: document.getElementById('notes').value,
-                maintenanceHistory: isEdit ? device.maintenanceHistory : []
+                notes: document.getElementById('notes').value
             };
 
             if (isEdit) {
                 const index = AppState.devices.findIndex(d => d.id === id);
-                // Check if last maintenance date has changed to add a log entry
-                if (lastMaintenanceDate && device.lastMaintenance !== lastMaintenanceDate) {
-                    formData.maintenanceHistory.push({ date: lastMaintenanceDate, engineer: AppState.currentUser.name });
+                const originalDevice = AppState.devices[index];
+                formData.maintenanceHistory = [...originalDevice.maintenanceHistory];
+
+                if ((isDeviceDueForMaintenance(originalDevice) || originalDevice.status === 'يحتاج صيانة') && newStatus === 'فعال') {
+                    formData.lastMaintenance = new Date().toISOString().split('T')[0];
+                    if (formData.maintenanceInterval) {
+                        const nextDate = new Date(formData.lastMaintenance);
+                        nextDate.setMonth(nextDate.getMonth() + parseInt(formData.maintenanceInterval, 10));
+                        formData.nextMaintenance = nextDate.toISOString().split('T')[0];
+                    } else {
+                        formData.nextMaintenance = '';
+                    }
+                    formData.maintenanceHistory.push({ date: formData.lastMaintenance, engineer: AppState.currentUser.name });
                 }
-                AppState.devices[index] = { ...AppState.devices[index], ...formData, id: id };
+                AppState.devices[index] = { ...originalDevice, ...formData };
             } else {
                 formData.id = generateDeviceId(formData.department);
-                if (lastMaintenanceDate) {
-                    formData.maintenanceHistory.push({ date: lastMaintenanceDate, engineer: AppState.currentUser.name });
+                formData.maintenanceHistory = [];
+                if (formData.lastMaintenance) {
+                    formData.maintenanceHistory.push({ date: formData.lastMaintenance, engineer: AppState.currentUser.name });
                 }
                 AppState.devices.push(formData);
             }
-            
             saveToStorage();
             fullRender();
-            modalsContainer.innerHTML = ''; // Close modal
+            modalsContainer.innerHTML = '';
         };
     };
 
     const openViewModal = (device) => {
-        const historyHTML = device.maintenanceHistory.map(h => `
+        const historyHTML = device.maintenanceHistory.slice().reverse().map(h => `
             <li class="flex justify-between items-center text-sm p-2 bg-slate-50 rounded">
                 <span><i class="fa-solid fa-calendar-check ml-2"></i>${formatDate(h.date)}</span>
                 <span><i class="fa-solid fa-user-gear ml-2"></i>${h.engineer}</span>
             </li>
         `).join('');
-
         const modalHTML = `
             <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-                <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl">
-                    <div class="p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-bold">${device.name}</h2>
-                            <button type="button" class="close-modal-btn text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
-                        </div>
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                    <div class="p-6 border-b"><div class="flex justify-between items-center"><h2 class="text-2xl font-bold">${device.name}</h2><button type="button" class="close-modal-btn text-slate-400 hover:text-slate-600 text-3xl">&times;</button></div></div>
+                    <div class="p-6 overflow-y-auto">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Info -->
                             <div class="md:col-span-2 space-y-3">
                                 <p><strong>الكود:</strong> ${device.id}</p>
                                 <p><strong>الرقم التسلسلي:</strong> ${device.serial || 'N/A'}</p>
@@ -528,37 +541,27 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <p><strong>المورد:</strong> ${device.supplier || 'N/A'}</p>
                                 <p><strong>الصيانة الدورية:</strong> ${device.maintenanceInterval ? `كل ${device.maintenanceInterval} أشهر` : 'غير محدد'}</p>
                                 <p><strong>الصيانة القادمة:</strong> ${formatDate(device.nextMaintenance)}</p>
-                                <div class="pt-4">
-                                    <h4 class="font-bold mb-2">سجل الصيانة</h4>
-                                    <ul class="space-y-2 max-h-40 overflow-y-auto pr-2">${historyHTML || '<p class="text-slate-500">لا يوجد سجل.</p>'}</ul>
-                                </div>
+                                <div class="pt-4"><h4 class="font-bold mb-2">سجل الصيانة</h4><ul class="space-y-2 max-h-40 overflow-y-auto border rounded-md p-2">${historyHTML || '<p class="text-slate-500 p-4 text-center">لا يوجد سجل.</p>'}</ul></div>
                             </div>
-                            <!-- QR -->
-                            <div class="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center">
-                                <h3 class="font-bold mb-2">رمز QR</h3>
-                                <div id="view-qrcode-container" class="p-2 bg-white border rounded-md"></div>
-                                <p class="text-sm text-slate-500 mt-2">امسح لطلب صيانة</p>
-                                <button id="print-sticker-btn" class="mt-4 py-2 px-4 bg-slate-600 text-white rounded-lg"><i class="fas fa-print mr-2"></i>طباعة الملصق</button>
+                            <div class="bg-slate-50 rounded-lg p-4 flex flex-col items-center justify-center self-start">
+                                <h3 class="font-bold mb-2">رمز QR</h3><div id="view-qrcode-container" class="p-2 bg-white border rounded-md"></div>
+                                <p class="text-sm text-slate-500 mt-2">امسح لطلب صيانة</p><button id="print-sticker-btn" class="mt-4 py-2 px-4 bg-slate-600 text-white rounded-lg"><i class="fas fa-print mr-2"></i>طباعة الملصق</button>
                             </div>
                         </div>
-                        <div class="mt-6 pt-4 border-t flex justify-end gap-4 engineer-only">
-                             <button id="delete-device-btn" class="py-2 px-6 bg-red-600 text-white font-bold rounded-lg">حذف</button>
-                             <button id="edit-device-btn" class="py-2 px-6 bg-blue-600 text-white font-bold rounded-lg">تعديل</button>
-                        </div>
+                    </div>
+                    <div class="p-4 border-t bg-slate-50 rounded-b-xl flex justify-end gap-4 engineer-only">
+                         <button id="delete-device-btn" class="py-2 px-6 bg-red-600 text-white font-bold rounded-lg">حذف</button>
+                         <button id="edit-device-btn" class="py-2 px-6 bg-blue-600 text-white font-bold rounded-lg">تعديل</button>
                     </div>
                 </div>
             </div>
         `;
         openModal(modalHTML);
-        renderUIForRole(); // Apply role permissions to the modal
-
-        // Generate QR
+        renderUIForRole();
         const whatsAppNumber = "972567090858";
         const message = `عطل بالجهاز: ${device.id}\nالمشكلة: `;
         const whatsappUrl = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
         new QRCode(document.getElementById('view-qrcode-container'), { text: whatsappUrl, width: 150, height: 150, correctLevel : QRCode.CorrectLevel.L });
-        
-        // Add event listeners for modal buttons
         document.getElementById('edit-device-btn')?.addEventListener('click', () => openEditModal(device));
         document.getElementById('delete-device-btn')?.addEventListener('click', () => openDeleteModal(device.id));
         document.getElementById('print-sticker-btn').addEventListener('click', () => printSticker(device));
@@ -568,15 +571,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalHTML = `
             <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
                 <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-                    <div class="p-6 text-center">
-                        <i class="fas fa-exclamation-triangle text-5xl text-amber-500 mb-4"></i>
-                        <h3 class="text-xl font-bold">تأكيد الحذف</h3>
-                        <p class="text-slate-600 my-2">هل أنت متأكد أنك تريد حذف هذا الجهاز؟</p>
-                    </div>
-                    <div class="flex justify-center gap-4 bg-slate-50 p-4 rounded-b-xl">
-                        <button class="close-modal-btn py-2 px-6 bg-slate-200 rounded-lg">إلغاء</button>
-                        <button id="confirm-delete-btn" class="py-2 px-6 bg-red-600 text-white font-bold rounded-lg">نعم، احذف</button>
-                    </div>
+                    <div class="p-6 text-center"><i class="fas fa-exclamation-triangle text-5xl text-amber-500 mb-4"></i><h3 class="text-xl font-bold">تأكيد الحذف</h3><p class="text-slate-600 my-2">هل أنت متأكد أنك تريد حذف هذا الجهاز؟</p></div>
+                    <div class="flex justify-center gap-4 bg-slate-50 p-4 rounded-b-xl"><button class="close-modal-btn py-2 px-6 bg-slate-200 rounded-lg">إلغاء</button><button id="confirm-delete-btn" class="py-2 px-6 bg-red-600 text-white font-bold rounded-lg">نعم، احذف</button></div>
                 </div>
             </div>
         `;
@@ -616,15 +612,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.print();
     };
 
-
     // --- INITIALIZATION & EVENT LISTENERS ---
     const fullRender = () => {
-        if (dashboardView.style.display !== 'none') {
-            renderDashboard();
-        }
-        if (listView.style.display !== 'none') {
-            renderDeviceList();
-        }
+        if (dashboardView.style.display !== 'none') renderDashboard();
+        if (listView.style.display !== 'none') renderDeviceList();
     };
 
     const initializeApp = () => {
@@ -633,39 +624,35 @@ document.addEventListener('DOMContentLoaded', () => {
         userNameDisplay.textContent = AppState.currentUser.name;
         userRoleDisplay.textContent = AppState.currentUser.role === 'engineer' ? 'مهندس' : 'مشرف';
         loadFromStorage();
-        renderDashboard(); // Initial view is dashboard
+        renderDashboard();
         renderUIForRole();
     };
 
-    // Global Event Listeners
     loginForm.addEventListener('submit', handleLogin);
     viewerLoginBtn.addEventListener('click', handleViewerLogin);
     logoutBtn.addEventListener('click', handleLogout);
 
     dashboardTab.addEventListener('click', () => {
-        dashboardTab.classList.add('active');
-        listTab.classList.remove('active');
-        dashboardView.style.display = 'block';
-        listView.style.display = 'none';
+        dashboardTab.classList.add('active'); listTab.classList.remove('active');
+        dashboardView.style.display = 'block'; listView.style.display = 'none';
         renderDashboard();
     });
 
     listTab.addEventListener('click', () => {
-        listTab.classList.add('active');
-        dashboardTab.classList.remove('active');
-        listView.style.display = 'block';
-        dashboardView.style.display = 'none';
+        listTab.classList.add('active'); dashboardTab.classList.remove('active');
+        listView.style.display = 'block'; dashboardView.style.display = 'none';
         renderDeviceList();
     });
 
-    // Event delegation for dynamically created elements
     document.body.addEventListener('click', (e) => {
         if (e.target.matches('.details-btn')) {
             const device = AppState.devices.find(d => d.id === e.target.dataset.id);
             if (device) openViewModal(device);
         }
-        if (e.target.matches('#add-device-btn')) {
-            openEditModal();
+        if (e.target.matches('#add-device-btn')) openEditModal();
+        if (e.target.matches('.complete-maint-btn')) {
+             const device = AppState.devices.find(d => d.id === e.target.dataset.id);
+            if (device) openEditModal(device);
         }
     });
     
